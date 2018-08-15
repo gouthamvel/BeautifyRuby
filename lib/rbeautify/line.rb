@@ -36,12 +36,16 @@ module RBeautify
       original_block.nil? || original_block.format_content?
     end
 
+    def special_indent_size
+      stripped =~ /^\./ ? language.indent_size : 0
+    end
+
     def indent_size
       if (block.nil? || block.strict_ancestor_of?(original_block)) && (original_block && original_block.indent_end_line?)
-        original_block.total_indent_size
+        original_block.total_indent_size + special_indent_size
       else
         common_ancestor = BlockStart.first_common_ancestor(original_block, block)
-        common_ancestor.nil? ? 0 : common_ancestor.total_indent_size
+        (common_ancestor.nil? ? 0 : common_ancestor.total_indent_size) + special_indent_size
       end
     end
 
